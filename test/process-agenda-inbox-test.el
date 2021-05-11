@@ -1,10 +1,10 @@
-;;; process-agenda-inbox-test.el --- Tests for process-agenda-inbox-*-lexical-binding:t-*-
+;;; process-org-agenda-inbox-test.el --- Tests for process-org-agenda-inbox-*-lexical-binding:t-*-
 
 ;; Copyright (C) 2021, Zweihänder <zweidev@zweihander.me>
 ;;
 ;; Author: Zweihänder
 ;; Keywords: org-mode, org-agenda
-;; Homepage: https://github.com/Zweihander-Main/process-agenda-inbox
+;; Homepage: https://github.com/Zweihander-Main/process-org-agenda-inbox
 ;; Version: 0.0.1
 
 ;; This file is not part of GNU Emacs.
@@ -26,13 +26,13 @@
 
 ;;; Commentary:
 
-;; Tests for process-agenda-inbox.el
+;; Tests for process-org-agenda-inbox.el
 
 ;;; Code:
 
 (require 'buttercup)
 (require 'f)
-(require 'process-agenda-inbox)
+(require 'process-org-agenda-inbox)
 
 (describe "Testing"
   (it "works."
@@ -43,4 +43,4 @@
 ;; flycheck-disabled-checkers: 'emacs-lisp-elsa
 ;; End:
 
-;;; process-agenda-inbox-test.el ends here
+;;; process-org-agenda-inbox-test.el ends here

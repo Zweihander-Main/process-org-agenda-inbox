@@ -1,4 +1,4 @@
-# process-agenda-inbox
+# process-org-agenda-inbox
 
 > WIP
 
@@ -16,7 +16,7 @@ hi [a+] zweisolutions {●} com
 
 [AGPLv3](./LICENSE)
 
-    process-agenda-inbox
+    process-org-agenda-inbox
     Copyright (C) 2021 Zweihänder
 
     This program is free software: you can redistribute it and/or modify

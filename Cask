@@ -1,9 +1,9 @@
 (source gnu)
 (source melpa)
 
-(package-file "process-agenda-inbox.el")
+(package-file "process-org-agenda-inbox.el")
 
-(files "process-agenda-inbox.el")
+(files "process-org-agenda-inbox.el")
 
 (depends-on "org")
 (depends-on "hl-line")

@@ -1,5 +1,5 @@
-SOURCE := process-agenda-inbox.el
-TEST   := ./test/process-agenda-inbox-test.el
+SOURCE := process-org-agenda-inbox.el
+TEST   := ./test/process-org-agenda-inbox-test.el
 
 .PHONY: test
 

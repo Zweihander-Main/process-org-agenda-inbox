@@ -1,10 +1,10 @@
-;;; process-agenda-inbox.el --- Process an agenda file as a GTD inbox-*-lexical-binding:t-*-
+;;; process-org-agenda-inbox.el --- Process an agenda file as a GTD inbox-*-lexical-binding:t-*-
 
 ;; Copyright (C) 2021, Zweihänder <zweidev@zweihander.me>
 ;;
 ;; Author: Zweihänder
 ;; Keywords: org-mode, org-agenda
-;; Homepage: https://github.com/Zweihander-Main/process-agenda-inbox
+;; Homepage: https://github.com/Zweihander-Main/process-org-agenda-inbox
 ;; Version: 0.0.2
 
 ;; This file is not part of GNU Emacs.
@@ -32,13 +32,13 @@
 (require 'org-agenda)
 (require 'hl-line)
 
-(defgroup process-agenda-inbox nil
-  "Customization for 'process-agenda-inbox' package."
+(defgroup process-org-agenda-inbox nil
+  "Customization for 'process-org-agenda-inbox' package."
   :group 'org
-  :prefix "process-agenda-inbox-")
+  :prefix "process-org-agenda-inbox-")
 
 ;;;###autoload
-(defun process-agenda-inbox-single-item ()
+(defun process-org-agenda-inbox-single-item ()
   "Process a single item in the agenda."
   (interactive)
   (org-with-wide-buffer
@@ -131,7 +131,7 @@
                     (org-todo "")
                     (org-toggle-item t))))))))))
 
-(defun process-agenda-inbox--bulk-process-entries ()
+(defun process-org-agenda-inbox--bulk-process-entries ()
   "Bulk process entries in agenda."
   ;; Set temporary variable lookup -- set hl-line-face from hl-line to hl-line-active
   (when (not (null org-agenda-bulk-marked-entries))
@@ -146,7 +146,7 @@
             (goto-char pos)
             (hl-line-highlight)
             (highlight-lines-matching-regexp (string-trim (thing-at-point 'line t)) 'highlight)
-            (let (org-loop-over-headlines-in-active-region) (funcall 'process-agenda-inbox-single-item))
+            (let (org-loop-over-headlines-in-active-region) (funcall 'process-org-agenda-inbox-single-item))
             ;; `post-command-hook' is not run yet.  We make sure any
             ;; pending log note is processed.
             (when (or (memq 'org-add-log-note (default-value 'post-command-hook))
@@ -163,26 +163,7 @@
                          skipped))
                (if (not org-agenda-persistent-marks) "" " (kept marked)")))))
 
-;;;###autoload
-(defun process-agenda-inbox-open-and-archive-all-links ()
-  "Bulk mark links."
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (goto-char (next-single-property-change (point) 'org-hd-marker))
-    (let ((ret-msg "")
-          (continue t))
-      (while continue
-        (setq ret-msg (org-agenda-open-link))
-        (unless (and (stringp ret-msg )(string= ret-msg "No link to open here"))
-          (progn
-            (org-agenda-todo "DONE")
-            (org-agenda-archive) ; TODO DRY with process-inbox-item
-            (org-agenda-previous-line))) ;; Line was deleted and on next item
-        (unless (org-agenda-next-line)
-          (setq continue nil))))))
-
-(defun process-agenda-inbox--bulk-mark-regexp-category (regexp)
+(defun process-org-agenda-inbox--bulk-mark-regexp-category (regexp)
   "Mark entries whose category matches REGEXP for future agenda bulk action."
   (let ((entries-marked 0) txt-at-point)
     (save-excursion
@@ -200,16 +181,35 @@
       (message "No entry matching this regexp."))))
 
 ;;;###autoload
-(defun process-agenda-inbox-all-items ()
+(defun process-org-agenda-inbox-all-items ()
   "Called in org-agenda-mode, processes all inbox items."
   (interactive)
-  (process-agenda-inbox-bulk-mark-regexp-category "")
-  (process-agenda-inbox--bulk-process-entries))
+  (process-org-agenda-inbox-bulk-mark-regexp-category "")
+  (process-org-agenda-inbox--bulk-process-entries))
 
-(provide 'process-agenda-inbox)
+;;;###autoload
+(defun process-org-agenda-inbox-open-and-archive-all-links ()
+  "Bulk mark links."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (goto-char (next-single-property-change (point) 'org-hd-marker))
+    (let ((ret-msg "")
+          (continue t))
+      (while continue
+        (setq ret-msg (org-agenda-open-link))
+        (unless (and (stringp ret-msg )(string= ret-msg "No link to open here"))
+          (progn
+            (org-agenda-todo "DONE")
+            (org-agenda-archive) ; TODO DRY with process-inbox-item
+            (org-agenda-previous-line))) ;; Line was deleted and on next item
+        (unless (org-agenda-next-line)
+          (setq continue nil))))))
+
+(provide 'process-org-agenda-inbox)
 
 ;; Local Variables:
 ;; coding: utf-8
 ;; End:
 
-;;; process-agenda-inbox.el ends here
+;;; process-org-agenda-inbox.el ends here
