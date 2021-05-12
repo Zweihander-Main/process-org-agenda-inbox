@@ -1,11 +1,11 @@
-;;; process-org-agenda-inbox.el --- Process an agenda file as a GTD inbox-*-lexical-binding:t-*-
+;;; process-org-agenda-inbox.el --- WIP-*-lexical-binding:t-*-
 
 ;; Copyright (C) 2021, Zweihänder <zweidev@zweihander.me>
 ;;
 ;; Author: Zweihänder
 ;; Keywords: org-mode, org-agenda
 ;; Homepage: https://github.com/Zweihander-Main/process-org-agenda-inbox
-;; Version: 0.0.2
+;; Version: 0.0.1
 
 ;; This file is not part of GNU Emacs.
 
@@ -26,6 +26,8 @@
 
 ;;; Commentary:
 ;;
+;; WIP
+;;
 ;;; Code:
 
 (require 'org)
@@ -36,6 +38,36 @@
   "Customization for 'process-org-agenda-inbox' package."
   :group 'org
   :prefix "process-org-agenda-inbox-")
+
+(defvar process-org-agenda-inbox-category ""
+  "Category to filter inbox items by. Leave as default empty string to use all
+items in the agenda buffer.")
+
+(defvar process-org-agenda-inbox-next-file nil
+"Path to file to use for next filing.")
+
+(defvar process-org-agenda-inbox-refile-target-info nil
+  "Refile target for info items -- same as used for org-refile-targets.")
+
+(defun process-org-agenda-inbox--edit-agenda-headline ()
+  "Perform org-edit-headline on current agenda item."
+  (org-agenda-check-no-diary)
+  (let* ((hdmarker (or (org-get-at-bol 'org-hd-marker)
+                       (org-agenda-error)))
+         (buffer (marker-buffer hdmarker))
+         (pos (marker-position hdmarker))
+         (inhibit-read-only t)
+         newhead)
+    (org-with-remote-undo buffer
+      (with-current-buffer buffer
+        (widen)
+        (goto-char pos)
+        (org-show-context 'agenda)
+        (call-interactively #'org-edit-headline)
+        (end-of-line 1)
+        (setq newhead (org-get-heading)))
+      (org-agenda-change-all-lines newhead hdmarker)
+      (beginning-of-line 1))))
 
 ;;;###autoload
 (defun process-org-agenda-inbox-single-item ()
@@ -56,7 +88,7 @@
                             ("link" ?l "Open link and mark done")
                             ("kill" ?k "Kill current line")
                             ("next" ?n "Put in next file")
-                            ("info" ?i "Conver to list item and refile under item")
+                            ("info" ?i "Convert to list item and refile under item")
                             ("rear" ?r "Move to end (rear) of list")
                             ("continue" ?\r "Continue processing"))))
        (cond ((string= answer "continue") (setq continue t))
@@ -77,14 +109,16 @@
                                             continue t))
              ((string= answer "kill") (setq type "kill"
                                             continue t))
-             ((string= answer "edit") (call-interactively #'zwei/org-agenda-edit-headline))
+             ((string= answer "edit")
+              (call-interactively
+               #'process-org-agenda-inbox--edit-agenda-headline))
              ((string= answer "todo") (org-agenda-todo))
              ((string= answer "note") (call-interactively #'org-agenda-add-note))))
      (cond ((string= type "todo")
             (progn
               (org-agenda-set-tags)
               (org-agenda-priority)
-              (call-interactively 'zwei/org-agenda-set-effort)
+              (call-interactively 'org-set-effort) ; TODO: switch to history ver
               (org-agenda-refile nil nil t)))
            ((string= type "kill")
             (progn
@@ -101,19 +135,20 @@
               (org-agenda-todo "NEXT")
               (org-agenda-set-tags)
               (org-agenda-priority)
-              (call-interactively 'zwei/org-agenda-set-effort)
-              (org-agenda-refile nil
-                                 (list (concat (car (last (split-string zwei/org-agenda-next-file "/"))) "/") ;; should be "next.org/"
-                                       zwei/org-agenda-next-file nil nil) t)))
+              (call-interactively 'org-set-effort) ; TODO: switch to history ver
+              (org-agenda-refile
+               nil
+               (list (concat
+                      (car (last (split-string process-org-agenda-inbox-next-file "/")))
+                      "/") ;; should be "next.org/"
+                      process-org-agenda-inbox-next-file nil nil) t)))
            ((string= type "link")
             (progn
               (org-agenda-todo "DONE")
               (org-agenda-archive)))
            ((string= type "info")
             (let ((org-refile-target-verify-function)
-                  (org-refile-targets '((zwei/org-agenda-projects-file :maxlevel . 2)
-                                        (zwei/org-agenda-tickler-file :maxlevel . 2)
-                                        (zwei/org-agenda-next-file :level . 1 ))))
+                  (org-refile-targets process-org-agenda-inbox-refile-target-info))
               ;; TODO: add in way to add to ideas, herf, english to add, ect. -- need roam refile
               ;; TODO: add in way to defer to bottom
               ;; TODO: Allow for schedule
@@ -165,7 +200,9 @@
 
 (defun process-org-agenda-inbox--bulk-mark-regexp-category (regexp)
   "Mark entries whose category matches REGEXP for future agenda bulk action."
-  (let ((entries-marked 0) txt-at-point)
+  (let ((entries-marked 0)
+        category-at-point
+        txt-at-point)
     (save-excursion
       (goto-char (point-min))
       (goto-char (next-single-property-change (point) 'org-hd-marker))
@@ -177,14 +214,15 @@
           (when (string-match-p regexp category-at-point)
             (setq entries-marked (1+ entries-marked))
             (call-interactively 'org-agenda-bulk-mark)))))
-    (unless entries-marked
+    (when (= entries-marked 0)
       (message "No entry matching this regexp."))))
 
 ;;;###autoload
 (defun process-org-agenda-inbox-all-items ()
   "Called in org-agenda-mode, processes all inbox items."
   (interactive)
-  (process-org-agenda-inbox-bulk-mark-regexp-category "")
+  (process-org-agenda-inbox--bulk-mark-regexp-category
+   process-org-agenda-inbox-category)
   (process-org-agenda-inbox--bulk-process-entries))
 
 ;;;###autoload
