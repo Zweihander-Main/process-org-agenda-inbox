@@ -51,6 +51,7 @@ items in the agenda buffer.")
 
 (defun process-org-agenda-inbox--edit-agenda-headline ()
   "Perform org-edit-headline on current agenda item."
+  (interactive)
   (org-agenda-check-no-diary)
   (let* ((hdmarker (or (org-get-at-bol 'org-hd-marker)
                        (org-agenda-error)))
