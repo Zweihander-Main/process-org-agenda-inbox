@@ -33,6 +33,7 @@
 (require 'org)
 (require 'org-agenda)
 (require 'hl-line)
+(require 'org-agenda-heading-functions)
 
 (defgroup process-org-agenda-inbox nil
   "Customization for 'process-org-agenda-inbox' package."
@@ -44,31 +45,10 @@
 items in the agenda buffer.")
 
 (defvar process-org-agenda-inbox-next-file nil
-"Path to file to use for next filing.")
+  "Path to file to use for next filing.")
 
 (defvar process-org-agenda-inbox-refile-target-info nil
   "Refile target for info items -- same as used for org-refile-targets.")
-
-(defun process-org-agenda-inbox--edit-agenda-headline ()
-  "Perform org-edit-headline on current agenda item."
-  (interactive)
-  (org-agenda-check-no-diary)
-  (let* ((hdmarker (or (org-get-at-bol 'org-hd-marker)
-                       (org-agenda-error)))
-         (buffer (marker-buffer hdmarker))
-         (pos (marker-position hdmarker))
-         (inhibit-read-only t)
-         newhead)
-    (org-with-remote-undo buffer
-      (with-current-buffer buffer
-        (widen)
-        (goto-char pos)
-        (org-show-context 'agenda)
-        (call-interactively #'org-edit-headline)
-        (end-of-line 1)
-        (setq newhead (org-get-heading)))
-      (org-agenda-change-all-lines newhead hdmarker)
-      (beginning-of-line 1))))
 
 ;;;###autoload
 (defun process-org-agenda-inbox-single-item ()
@@ -112,7 +92,7 @@ items in the agenda buffer.")
                                             continue t))
              ((string= answer "edit")
               (call-interactively
-               #'process-org-agenda-inbox--edit-agenda-headline))
+               #'org-agenda-heading-functions-edit-headline))
              ((string= answer "todo") (org-agenda-todo))
              ((string= answer "note") (call-interactively #'org-agenda-add-note))))
      (cond ((string= type "todo")
@@ -142,7 +122,7 @@ items in the agenda buffer.")
                (list (concat
                       (car (last (split-string process-org-agenda-inbox-next-file "/")))
                       "/") ;; should be "next.org/"
-                      process-org-agenda-inbox-next-file nil nil) t)))
+                     process-org-agenda-inbox-next-file nil nil) t)))
            ((string= type "link")
             (progn
               (org-agenda-todo "DONE")
@@ -163,7 +143,6 @@ items in the agenda buffer.")
                   (with-current-buffer buffer
                     (widen)
                     (goto-char pos)
-                    (debug)
                     (org-todo "")
                     (org-toggle-item t))))))))))
 
