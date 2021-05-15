@@ -99,7 +99,7 @@ items in the agenda buffer.")
             (progn
               (org-agenda-set-tags)
               (org-agenda-priority)
-              (call-interactively 'org-set-effort) ; TODO: switch to history ver
+              (call-interactively #'org-agenda-heading-functions-set-saved-effort)
               (org-agenda-refile nil nil t)))
            ((string= type "kill")
             (progn
@@ -116,7 +116,7 @@ items in the agenda buffer.")
               (org-agenda-todo "NEXT")
               (org-agenda-set-tags)
               (org-agenda-priority)
-              (call-interactively 'org-set-effort) ; TODO: switch to history ver
+              (call-interactively #'org-agenda-heading-functions-set-saved-effort)
               (org-agenda-refile
                nil
                (list (concat
