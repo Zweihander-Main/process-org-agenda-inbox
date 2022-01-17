@@ -38,7 +38,15 @@
 (require 'org-agenda-heading-functions)
 
 (eval-when-compile
-  ())
+  (defvar org-agenda-markers)
+  (defvar org-bookmark-names-plist)
+  (defvar org-agenda-bulk-marked-entries)
+  (defvar org-agenda-persistent-marks)
+  (declare-function org-agenda-heading-functions-edit-headline
+                    "org-agenda-heading-functions")
+  (declare-function org-agenda-heading-functions-set-saved-effort
+                    "org-agenda-heading-functions" (effort))
+  (declare-function org-agenda-add-note "org-agenda"))
 
 (defgroup process-org-agenda-inbox nil
   "Customization for 'process-org-agenda-inbox' package."
