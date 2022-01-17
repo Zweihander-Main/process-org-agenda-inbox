@@ -3,9 +3,10 @@
 ;; Copyright (C) 2021, Zweihänder <zweidev@zweihander.me>
 ;;
 ;; Author: Zweihänder
-;; Keywords: org-mode, org-agenda
+;; Keywords: outlines
 ;; Homepage: https://github.com/Zweihander-Main/process-org-agenda-inbox
 ;; Version: 0.0.1
+;; Package-Requires: ((emacs "27.1"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -31,9 +32,13 @@
 ;;; Code:
 
 (require 'org)
+(require 'bookmark)
 (require 'org-agenda)
 (require 'hl-line)
 (require 'org-agenda-heading-functions)
+
+(eval-when-compile
+  ())
 
 (defgroup process-org-agenda-inbox nil
   "Customization for 'process-org-agenda-inbox' package."
@@ -41,8 +46,8 @@
   :prefix "process-org-agenda-inbox-")
 
 (defvar process-org-agenda-inbox-category ""
-  "Category to filter inbox items by. Leave as default empty string to use all
-items in the agenda buffer.")
+  "Category to filter inbox items by.
+Leave as default empty string to use all items in the agenda buffer.")
 
 (defvar process-org-agenda-inbox-next-file nil
   "Path to file to use for next filing.")
@@ -194,10 +199,9 @@ items in the agenda buffer.")
                (if (not org-agenda-persistent-marks) "" " (kept marked)")))))
 
 (defun process-org-agenda-inbox--bulk-mark-regexp-category (regexp)
-  "Mark entries whose category matches REGEXP for future agenda bulk action."
+  "Mark entries whose category match REGEXP for future agenda bulk action."
   (let ((entries-marked 0)
-        category-at-point
-        txt-at-point)
+        category-at-point)
     (save-excursion
       (goto-char (point-min))
       (goto-char (next-single-property-change (point) 'org-hd-marker))
@@ -243,6 +247,7 @@ items in the agenda buffer.")
 
 ;; Local Variables:
 ;; coding: utf-8
+;; flycheck-disabled-checkers: 'emacs-lisp-elsa
 ;; End:
 
 ;;; process-org-agenda-inbox.el ends here
