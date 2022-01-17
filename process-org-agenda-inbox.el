@@ -60,7 +60,18 @@ items in the agenda buffer.")
          (type "todo"))
      (while (not continue)
        (setq answer
-             (read-answer "Item options: [v]iew/[e]dit/[t]odo/[d]one/[a]:note/[l]ink/[k]ill/[n]ext/[i]nfo/[r]ear/[RET]:Continue "
+             (read-answer (concat "Item options: "
+                                  "[v]iew/"
+                                  "[e]dit/"
+                                  "[t]odo/"
+                                  "[d]one/"
+                                  "[a]note/"
+                                  "[l]ink/"
+                                  "[k]ill/"
+                                  "[n]ext/"
+                                  "[i]nfo/"
+                                  "[r]ear/"
+                                  "[RET]:Continue ")
                           '(("view" ?v "View in minibuffer")
                             ("edit" ?e "Edit the headline of the item")
                             ("todo" ?t "Change TODO state of item")
@@ -77,7 +88,8 @@ items in the agenda buffer.")
              ((string= answer "link")
               (let ((ret-msg ""))
                 (setq ret-msg (org-agenda-open-link))
-                (unless (and (stringp ret-msg )(string= ret-msg "No link to open here"))
+                (unless (and (stringp ret-msg )
+                             (string= ret-msg "No link to open here"))
                   (setq type "link"
                         continue t))))
              ((string= answer "rear") (setq type "rear"
@@ -120,7 +132,8 @@ items in the agenda buffer.")
               (org-agenda-refile
                nil
                (list (concat
-                      (car (last (split-string process-org-agenda-inbox-next-file "/")))
+                      (car (last
+                            (split-string process-org-agenda-inbox-next-file "/")))
                       "/") ;; should be "next.org/"
                      process-org-agenda-inbox-next-file nil nil) t)))
            ((string= type "link")
@@ -130,7 +143,7 @@ items in the agenda buffer.")
            ((string= type "info")
             (let ((org-refile-target-verify-function)
                   (org-refile-targets process-org-agenda-inbox-refile-target-info))
-              ;; TODO: add in way to add to ideas, herf, english to add, ect. -- need roam refile
+              ;; TODO: add in way to add to ideas, herf, english to add, roam, ect.
               ;; TODO: add in way to defer to bottom
               ;; TODO: Allow for schedule
               (org-agenda-refile nil nil t)
@@ -160,8 +173,10 @@ items in the agenda buffer.")
                      (cl-incf skipped))
             (goto-char pos)
             (hl-line-highlight)
-            (highlight-lines-matching-regexp (string-trim (thing-at-point 'line t)) 'highlight)
-            (let (org-loop-over-headlines-in-active-region) (funcall 'process-org-agenda-inbox-single-item))
+            (highlight-lines-matching-regexp
+             (string-trim (thing-at-point 'line t)) 'highlight)
+            (let (org-loop-over-headlines-in-active-region)
+              (funcall 'process-org-agenda-inbox-single-item))
             ;; `post-command-hook' is not run yet.  We make sure any
             ;; pending log note is processed.
             (when (or (memq 'org-add-log-note (default-value 'post-command-hook))
