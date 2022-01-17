@@ -8,7 +8,6 @@
 (depends-on "org-agenda-heading-functions" :git "https://github.com/zweihander-main/org-agenda-heading-functions.git" :files ("org-agenda-heading-functions.el"))
 
 (depends-on "org")
-(depends-on "hl-line")
 
 (development
  (depends-on "f")
