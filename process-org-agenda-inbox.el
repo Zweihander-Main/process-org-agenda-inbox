@@ -3,7 +3,7 @@
 ;; Copyright (C) 2021, Zweihänder <zweidev@zweihander.me>
 ;;
 ;; Author: Zweihänder
-;; Keywords: outlines
+;; Keywords: outline
 ;; Homepage: https://github.com/Zweihander-Main/process-org-agenda-inbox
 ;; Version: 0.0.1
 ;; Package-Requires: ((emacs "27.1"))
@@ -38,6 +38,7 @@
 (require 'org-agenda-heading-functions)
 
 (eval-when-compile
+  (defvar read-answer-short)
   (defvar org-agenda-markers)
   (defvar org-bookmark-names-plist)
   (defvar org-agenda-bulk-marked-entries)
@@ -70,7 +71,8 @@ Leave as default empty string to use all items in the agenda buffer.")
   (org-with-wide-buffer
    (let ((answer nil)
          (continue nil)
-         (type "todo"))
+         (type "todo")
+         (read-answer-short t))
      (while (not continue)
        (setq answer
              (read-answer (concat "Item options: "
